@@ -490,6 +490,54 @@
       }
     }
   </style>
+
+<style id="dealdar-bot-styles">
+.deal-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.deal-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+}
+
+.deal-card:hover {
+  transform: translateY(-3px);
+}
+
+.deal-img {
+  width: 100%;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 14px 14px 0 0;
+  background: #111;
+}
+
+.deal-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.deal-img-fallback {
+  font-size: 3rem;
+}
+
+.deal-title {
+  line-height: 1.4;
+}
+
+.deal-cta {
+  margin-top: 12px;
+  font-weight: 600;
+}
+</style>
+
 </head>
 <body>
 
@@ -538,25 +586,26 @@
         </div>
 
         <div class="deal-grid">
-          <a href="#" class="deal-card-link">
-            <div class="deal-card">
-              <div class="badge-hot">🔥 Hot</div>
-              <div class="deal-img deal-img-fallback">🏷️</div>
-              <div class="deal-body">
-                <div class="deal-store">Beispiel-Shop</div>
-                <div class="deal-title">Hier erscheinen automatisch deine aktuellen Deals.</div>
-                <div class="deal-prices">
-                  <span class="deal-price-new">99€</span>
-                  <span class="deal-price-old">149€</span>
-                  <span class="deal-discount">-34%</span>
-                </div>
-                <div class="deal-cta">Zum Deal →</div>
-              </div>
-            </div>
-          </a>
+
+    <a href="https://www.mydealz.de/deals/apple-watch-ulta-2-30eur-netto-gutschen-2756160" target="_blank" rel="noopener nofollow" class="deal-card-link">
+      <div class="deal-card">
+        <div class="badge-hot">🔥 Hot</div>
+        <div class="deal-img"><img src="https://static.mydealz.de/threads/raw/QVdDZ/2756160_1/re/150x150/qt/55/2756160_1.jpg" alt="111° - Apple Watch Ultra 2 Preis durch 30€ Gutschein" loading="lazy" referrerpolicy="no-referrer"></div>
+        <div class="deal-body">
+          <div class="deal-store">Online</div>
+          <div class="deal-title">111° - Apple Watch Ultra 2 Preis durch 30€ Gutschein</div>
+          <div class="deal-prices">
+            <span class="deal-price-new">30€</span>
+            
+            
+          </div>
+          <div class="deal-cta">Zum Deal →</div>
         </div>
       </div>
+    </a>
+  </div>
     </section>
+  <!-- Zuletzt aktualisiert: 29.03.2026 14:44 -->
 
     <section id="kategorien">
       <div class="container">
