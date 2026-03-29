@@ -66,10 +66,10 @@ def get_store(titel: str, link: str) -> str:
     return "Online"
 
 def parse_preis(titel: str) -> str:
-    match = re.search(r'(\d+(?:[.,]\d+)?)\s*€', titel)
-    if match:
-        return match.group(0)
-    return "Preis unbekannt"
+    matches = re.findall(r'(\d+(?:[.,]\d+)?)\s*€', titel)
+    if not matches:
+        return "Preis unbekannt"
+    return matches[-1] + "€"
 
 def parse_rabatt(titel: str) -> str:
     match = re.search(r'(\d{1,2})\s*%', titel)
@@ -151,7 +151,7 @@ def hole_deals_von_rss():
             print(f"Hole Deals von: {url}")
             req = urllib.request.Request(
                 url,
-                headers={"User-Agent": "DealDar-Bot/2.0"}
+                headers={"User-Agent": "DealDar-Bot/3.0"}
             )
 
             with urllib.request.urlopen(req, timeout=15) as response:
@@ -257,6 +257,21 @@ def erstelle_deal_karten(deals):
 def inject_style_if_missing(html_text: str) -> str:
     extra_css = """
 <style id="dealdar-bot-styles">
+.deal-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.deal-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+}
+
+.deal-card:hover {
+  transform: translateY(-3px);
+}
+
 .deal-img {
   width: 100%;
   height: 180px;
@@ -267,16 +282,24 @@ def inject_style_if_missing(html_text: str) -> str:
   border-radius: 14px 14px 0 0;
   background: #111;
 }
+
 .deal-img img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
+
 .deal-img-fallback {
   font-size: 3rem;
 }
+
 .deal-title {
   line-height: 1.4;
+}
+
+.deal-cta {
+  margin-top: 12px;
+  font-weight: 600;
 }
 </style>
 """
@@ -316,7 +339,7 @@ def aktualisiere_website(deals):
     print(f"Website aktualisiert: {jetzt}")
 
 def main():
-    print("DealDar Bot V2 startet...")
+    print("DealDar Bot V3 startet...")
     deals = hole_deals_von_rss()
 
     if not deals:
