@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DealDar.de – Dein Zuhause für Deals 🌙</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --rot: #e8321a;
+      --dunkel: #111111;
+      --grau: #1e1e1e;
+      --hellgrau: #2a2a2a;
+      --text: #f0ede8;
+      --gedimmt: #888;
+      --gold: #f5c542;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--dunkel);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      overflow-x: hidden;
+    }
+    body.ar { font-family: 'Cairo', sans-serif; }
+
+    .lang-bar {
+      background: #0a0a0a;
+      border-bottom: 1px solid var(--hellgrau);
+      display: flex; justify-content: flex-end;
+      padding: 0.4rem 2rem; gap: 0.5rem;
+    }
+    .lang-btn {
+      background: none; border: 1.5px solid var(--hellgrau);
+      color: var(--gedimmt); cursor: pointer;
+      font-size: 0.78rem; font-weight: 700;
+      padding: 0.2rem 0.75rem; border-radius: 3px;
+      letter-spacing: 1px; transition: all 0.2s;
+    }
+    .lang-btn.active { border-color: var(--rot); color: var(--rot); background: rgba(232,50,26,0.08); }
+    .lang-btn:hover { border-color: var(--text); color: var(--text); }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(17,17,17,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 2px solid var(--rot);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 64px;
+    }
+    .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--text); text-decoration: none; letter-spacing: 2px; }
+    .logo span { color: var(--rot); }
+    nav ul { list-style: none; display: flex; gap: 2rem; }
+    nav ul li a { color: var(--gedimmt); text-decoration: none; font-weight: 500; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; transition: color 0.2s; }
+    nav ul li a:hover { color: var(--text); }
+
+    .hero { position: relative; padding: 6rem 2rem 5rem; text-align: center; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(232,50,26,0.18) 0%, transparent 70%); pointer-events: none; }
+    .hero-badge { display: inline-block; background: var(--rot); color: #fff; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; padding: 0.3rem 1rem; border-radius: 2px; margin-bottom: 1.5rem; animation: fadeDown 0.6s ease both; }
+    .hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(3.5rem, 10vw, 7rem); line-height: 0.95; letter-spacing: 3px; animation: fadeDown 0.7s 0.1s ease both; }
+    body.ar .hero h1 { font-family: 'Cairo', sans-serif; font-weight: 900; letter-spacing: 0; line-height: 1.1; }
+    .hero h1 span { color: var(--rot); }
+    .hero p { margin-top: 1.5rem; color: var(--gedimmt); font-size: 1.1rem; max-width: 520px; margin-inline: auto; animation: fadeDown 0.7s 0.2s ease both; }
+    .hero-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2.5rem; animation: fadeDown 0.7s 0.3s ease both; }
+    .btn-primary { background: var(--rot); color: #fff; padding: 0.85rem 2.2rem; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; border: none; cursor: pointer; border-radius: 3px; text-decoration: none; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 4px 20px rgba(232,50,26,0.35); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(232,50,26,0.5); }
+    .btn-secondary { background: transparent; color: var(--text); padding: 0.85rem 2.2rem; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; border: 1.5px solid var(--hellgrau); cursor: pointer; border-radius: 3px; text-decoration: none; transition: border-color 0.2s; }
+    .btn-secondary:hover { border-color: var(--text); }
+
+    .stats { display: flex; justify-content: center; flex-wrap: wrap; border-top: 1px solid var(--hellgrau); border-bottom: 1px solid var(--hellgrau); }
+    .stat { flex: 1; min-width: 160px; padding: 1.5rem 1rem; text-align: center; border-right: 1px solid var(--hellgrau); }
+    .stat:last-child { border-right: none; }
+    .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; color: var(--rot); line-height: 1; }
+    .stat-label { font-size: 0.78rem; color: var(--gedimmt); text-transform: uppercase; letter-spacing: 1px; margin-top: 0.3rem; }
+
+    section { padding: 4rem 2rem; max-width: 1200px; margin: 0 auto; }
+    .section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 2rem; border-left: 4px solid var(--rot); padding-left: 1rem; }
+    body.ar .section-header { border-left: none; border-right: 4px solid var(--rot); padding-left: 0; padding-right: 1rem; }
+    .section-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 2px; }
+    body.ar .section-header h2 { font-family: 'Cairo', sans-serif; font-weight: 900; letter-spacing: 0; }
+    .section-header a { font-size: 0.82rem; color: var(--gedimmt); text-decoration: none; text-transform: uppercase; letter-spacing: 1px; }
+    .section-header a:hover { color: var(--rot); }
+
+    .deal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+    .deal-card { background: var(--grau); border: 1px solid var(--hellgrau); border-radius: 6px; overflow: hidden; transition: transform 0.2s, border-color 0.2s; cursor: pointer; position: relative; }
+    .deal-card:hover { transform: translateY(-4px); border-color: var(--rot); }
+    .badge-hot, .badge-neu { position: absolute; top: 12px; left: 12px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 0.2rem 0.6rem; border-radius: 2px; }
+    body.ar .badge-hot, body.ar .badge-neu { left: auto; right: 12px; }
+    .badge-hot { background: var(--rot); color: #fff; }
+    .badge-neu { background: var(--gold); color: #111; }
+    .deal-img { width: 100%; height: 180px; background: var(--hellgrau); display: flex; align-items: center; justify-content: center; font-size: 4rem; }
+    .deal-body { padding: 1.2rem; }
+    .deal-store { font-size: 0.72rem; color: var(--gedimmt); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem; }
+    .deal-title { font-weight: 700; font-size: 1rem; line-height: 1.3; margin-bottom: 0.8rem; }
+    .deal-prices { display: flex; align-items: baseline; gap: 0.75rem; }
+    .deal-price-new { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--rot); }
+    .deal-price-old { font-size: 0.9rem; color: var(--gedimmt); text-decoration: line-through; }
+    .deal-discount { margin-left: auto; background: rgba(232,50,26,0.15); color: var(--rot); font-weight: 700; font-size: 0.8rem; padding: 0.2rem 0.5rem; border-radius: 3px; }
+    .deal-cta { display: block; margin-top: 1.2rem; background: var(--rot); color: #fff; text-align: center; text-decoration: none; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; padding: 0.75rem; border-radius: 3px; transition: opacity 0.15s; }
+    .deal-cta:hover { opacity: 0.85; }
+
+    .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; }
+    .cat-card { background: var(--grau); border: 1px solid var(--hellgrau); border-radius: 6px; padding: 1.5rem 1rem; text-align: center; text-decoration: none; color: var(--text); transition: border-color 0.2s, background 0.2s; }
+    .cat-card:hover { border-color: var(--rot); background: var(--hellgrau); }
+    .cat-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .cat-name { font-size: 0.85rem; font-weight: 600; }
+
+    .newsletter-wrap { background: var(--grau); border: 1px solid var(--hellgrau); border-radius: 8px; padding: 3rem 2rem; text-align: center; position: relative; overflow: hidden; }
+    .newsletter-wrap::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 80% at 50% 120%, rgba(232,50,26,0.12), transparent 70%); pointer-events: none; }
+    .newsletter-wrap h2 { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; letter-spacing: 2px; margin-bottom: 0.5rem; }
+    body.ar .newsletter-wrap h2 { font-family: 'Cairo', sans-serif; font-weight: 900; letter-spacing: 0; }
+    .newsletter-wrap p { color: var(--gedimmt); margin-bottom: 2rem; max-width: 440px; margin-inline: auto; }
+    .nl-form { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+    .nl-form input { background: var(--hellgrau); border: 1.5px solid #333; color: var(--text); padding: 0.85rem 1.2rem; border-radius: 3px; font-size: 0.95rem; width: 300px; max-width: 100%; outline: none; transition: border-color 0.2s; }
+    .nl-form input:focus { border-color: var(--rot); }
+    .nl-form input::placeholder { color: var(--gedimmt); }
+
+    footer { border-top: 1px solid var(--hellgrau); padding: 2.5rem 2rem; text-align: center; color: var(--gedimmt); font-size: 0.82rem; }
+    footer a { color: var(--gedimmt); text-decoration: none; margin: 0 0.75rem; }
+    footer a:hover { color: var(--text); }
+    .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 2px; margin-bottom: 1rem; }
+    .footer-logo span { color: var(--rot); }
+    .affiliate-note { max-width: 600px; margin: 1.5rem auto 0; font-size: 0.75rem; color: #555; line-height: 1.6; }
+
+    @keyframes fadeDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 600px) { nav ul { display: none; } .stat { min-width: 120px; } }
+  </style>
+</head>
+<body>
+
+<div class="lang-bar">
+  <button class="lang-btn active" onclick="setLang('de', this)">🇩🇪 DE</button>
+  <button class="lang-btn" onclick="setLang('ar', this)">🇸🇦 AR</button>
+</div>
+
+<nav>
+  <a href="#" class="logo">Deal<span>Dar</span></a>
+  <ul>
+    <li><a href="#deals" data-de="Deals" data-ar="العروض">Deals</a></li>
+    <li><a href="#kategorien" data-de="Kategorien" data-ar="الفئات">Kategorien</a></li>
+    <li><a href="#newsletter" data-de="Newsletter" data-ar="النشرة">Newsletter</a></li>
+  </ul>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge" data-de="🔥 Täglich neue Deals" data-ar="🔥 عروض جديدة يومياً">🔥 Täglich neue Deals</div>
+  <h1 data-de="Nie wieder<br/><span>zu viel</span><br/>bezahlen." data-ar="لا تدفع<br/><span>أكثر من</span><br/>اللازم.">Nie wieder<br/><span>zu viel</span><br/>bezahlen.</h1>
+  <p data-de="DealDar findet die besten Deals aus dem Netz – täglich kuratiert, immer aktuell." data-ar="شنابشن رادار يجد أفضل العروض من الإنترنت – منتقاة يومياً، دائماً محدثة.">DealDar findet die besten Deals aus dem Netz – täglich kuratiert, immer aktuell.</p>
+  <div class="hero-cta">
+    <a href="#deals" class="btn-primary" data-de="Deals entdecken" data-ar="اكتشف العروض">Deals entdecken</a>
+    <a href="#newsletter" class="btn-secondary" data-de="Newsletter" data-ar="اشترك الآن">Newsletter</a>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-num">500+</div><div class="stat-label" data-de="Deals täglich" data-ar="عرض يومياً">Deals täglich</div></div>
+  <div class="stat"><div class="stat-num">12K</div><div class="stat-label" data-de="Abonnenten" data-ar="مشترك">Abonnenten</div></div>
+  <div class="stat"><div class="stat-num">Ø 43%</div><div class="stat-label" data-de="Ersparnis" data-ar="توفير">Ersparnis</div></div>
+  <div class="stat"><div class="stat-num">100%</div><div class="stat-label" data-de="Kostenlos" data-ar="مجاناً">Kostenlos</div></div>
+</div>
+
+<section id="deals">
+  <div class="section-header">
+    <h2 data-de="🔥 Top Deals Heute" data-ar="🔥 أفضل عروض اليوم">🔥 Top Deals Heute</h2>
+    <a href="#" data-de="Alle anzeigen →" data-ar="عرض الكل →">Alle anzeigen →</a>
+  </div>
+  <div class="deal-grid">
+
+    <div class="deal-card">
+      <div class="badge-hot" data-de="🔥 Hot" data-ar="🔥 ساخن">🔥 Hot</div>
+      <div class="deal-img">🎧</div>
+      <div class="deal-body">
+        <div class="deal-store">Amazon</div>
+        <div class="deal-title" data-de="Sony WH-1000XM5 Noise Cancelling Kopfhörer" data-ar="سماعات سوني WH-1000XM5 بإلغاء الضوضاء">Sony WH-1000XM5 Noise Cancelling Kopfhörer</div>
+        <div class="deal-prices">
+          <span class="deal-price-new">249€</span>
+          <span class="deal-price-old">379€</span>
+          <span class="deal-discount">-34%</span>
+        </div>
+        <a href="#" class="deal-cta" data-de="Zum Deal →" data-ar="اذهب للعرض →">Zum Deal →</a>
+      </div>
+    </div>
+
+    <div class="deal-card">
+      <div class="badge-neu" data-de="⭐ Neu" data-ar="⭐ جديد">⭐ Neu</div>
+      <div class="deal-img">💻</div>
+      <div class="deal-body">
+        <div class="deal-store">MediaMarkt</div>
+        <div class="deal-title" data-de="Lenovo IdeaPad 3 – 15&quot; Laptop, 16GB RAM" data-ar="لابتوب لينوفو IdeaPad 3 – 15 بوصة، 16 جيجا">Lenovo IdeaPad 3 – 15" Laptop, 16GB RAM</div>
+        <div class="deal-prices">
+          <span class="deal-price-new">449€</span>
+          <span class="deal-price-old">649€</span>
+          <span class="deal-discount">-31%</span>
+        </div>
+        <a href="#" class="deal-cta" data-de="Zum Deal →" data-ar="اذهب للعرض →">Zum Deal →</a>
+      </div>
+    </div>
+
+    <div class="deal-card">
+      <div class="deal-img">📱</div>
+      <div class="deal-body">
+        <div class="deal-store">Saturn</div>
+        <div class="deal-title" data-de="Samsung Galaxy A55 5G – 128GB" data-ar="سامسونج جالاكسي A55 5G – 128 جيجا">Samsung Galaxy A55 5G – 128GB</div>
+        <div class="deal-prices">
+          <span class="deal-price-new">279€</span>
+          <span class="deal-price-old">369€</span>
+          <span class="deal-discount">-24%</span>
+        </div>
+        <a href="#" class="deal-cta" data-de="Zum Deal →" data-ar="اذهب للعرض →">Zum Deal →</a>
+      </div>
+    </div>
+
+    <div class="deal-card">
+      <div class="badge-hot" data-de="🔥 Hot" data-ar="🔥 ساخن">🔥 Hot</div>
+      <div class="deal-img">🤖</div>
+      <div class="deal-body">
+        <div class="deal-store">Amazon</div>
+        <div class="deal-title" data-de="iRobot Roomba i5+ Saugroboter" data-ar="مكنسة روبوتية iRobot Roomba i5+">iRobot Roomba i5+ Saugroboter</div>
+        <div class="deal-prices">
+          <span class="deal-price-new">299€</span>
+          <span class="deal-price-old">549€</span>
+          <span class="deal-discount">-46%</span>
+        </div>
+        <a href="#" class="deal-cta" data-de="Zum Deal →" data-ar="اذهب للعرض →">Zum Deal →</a>
+      </div>
+    </div>
+
+    <div class="deal-card">
+      <div class="deal-img">⌚</div>
+      <div class="deal-body">
+        <div class="deal-store">Alternate</div>
+        <div class="deal-title" data-de="Garmin Forerunner 255 GPS Laufuhr" data-ar="ساعة الجري Garmin Forerunner 255 GPS">Garmin Forerunner 255 GPS Laufuhr</div>
+        <div class="deal-prices">
+          <span class="deal-price-new">199€</span>
+          <span class="deal-price-old">299€</span>
+          <span class="deal-discount">-33%</span>
+        </div>
+        <a href="#" class="deal-cta" data-de="Zum Deal →" data-ar="اذهب للعرض →">Zum Deal →</a>
+      </div>
+    </div>
+
+    <div class="deal-card">
+      <div class="badge-neu" data-de="⭐ Neu" data-ar="⭐ جديد">⭐ Neu</div>
+      <div class="deal-img">🎮</div>
+      <div class="deal-body">
+        <div class="deal-store">GameStop</div>
+        <div class="deal-title" data-de="PlayStation 5 Slim + Extra Controller Bundle" data-ar="بلايستيشن 5 سليم + باقة تحكم">PlayStation 5 Slim + Extra Controller Bundle</div>
+        <div class="deal-prices">
+          <span class="deal-price-new">469€</span>
+          <span class="deal-price-old">569€</span>
+          <span class="deal-discount">-18%</span>
+        </div>
+        <a href="#" class="deal-cta" data-de="Zum Deal →" data-ar="اذهب للعرض →">Zum Deal →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="kategorien">
+  <div class="section-header">
+    <h2 data-de="📂 Kategorien" data-ar="📂 الفئات">📂 Kategorien</h2>
+  </div>
+  <div class="cat-grid">
+    <a href="#" class="cat-card"><div class="cat-icon">💻</div><div class="cat-name" data-de="Technik" data-ar="تقنية">Technik</div></a>
+    <a href="#" class="cat-card"><div class="cat-icon">👗</div><div class="cat-name" data-de="Mode" data-ar="أزياء">Mode</div></a>
+    <a href="#" class="cat-card"><div class="cat-icon">🏠</div><div class="cat-name" data-de="Haushalt" data-ar="منزل">Haushalt</div></a>
+    <a href="#" class="cat-card"><div class="cat-icon">🎮</div><div class="cat-name" data-de="Gaming" data-ar="ألعاب">Gaming</div></a>
+    <a href="#" class="cat-card"><div class="cat-icon">✈️</div><div class="cat-name" data-de="Reisen" data-ar="سفر">Reisen</div></a>
+    <a href="#" class="cat-card"><div class="cat-icon">🍔</div><div class="cat-name" data-de="Lebensmittel" data-ar="طعام">Lebensmittel</div></a>
+    <a href="#" class="cat-card"><div class="cat-icon">💪</div><div class="cat-name" data-de="Sport" data-ar="رياضة">Sport</div></a>
+    <a href="#" class="cat-card"><div class="cat-icon">📚</div><div class="cat-name" data-de="Bücher" data-ar="كتب">Bücher</div></a>
+  </div>
+</section>
+
+<section id="newsletter" style="padding-top: 0;">
+  <div class="newsletter-wrap">
+    <h2 data-de="Kein Deal verpassen" data-ar="لا تفوّت أي عرض">Kein Deal verpassen</h2>
+    <p data-de="Trag dich ein und erhalte die heißesten Deals direkt in dein Postfach – kostenlos & jederzeit abbestellbar." data-ar="سجل الآن واستلم أفضل العروض مباشرة في بريدك – مجاناً ويمكن إلغاء الاشتراك في أي وقت.">Trag dich ein und erhalte die heißesten Deals direkt in dein Postfach – kostenlos & jederzeit abbestellbar.</p>
+    <div class="nl-form">
+      <input type="email" id="nl-input" placeholder="deine@email.de" />
+      <button class="btn-primary" id="nl-btn" data-de="Jetzt anmelden" data-ar="اشترك الآن" onclick="handleNL()">Jetzt anmelden</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Deal<span>Dar</span></div>
+  <div>
+    <a href="#" data-de="Impressum" data-ar="بيانات قانونية">Impressum</a>
+    <a href="#" data-de="Datenschutz" data-ar="الخصوصية">Datenschutz</a>
+    <a href="#" data-de="Kontakt" data-ar="تواصل معنا">Kontakt</a>
+    <a href="#" data-de="Über uns" data-ar="من نحن">Über uns</a>
+  </div>
+  <p class="affiliate-note" data-de="* Diese Website enthält Affiliate-Links. Wenn du über unsere Links einkaufst, erhalten wir eine kleine Provision – für dich entstehen dabei keine Mehrkosten." data-ar="* يحتوي هذا الموقع على روابط تابعة. إذا اشتريت عبر روابطنا، نحصل على عمولة صغيرة – دون أي تكلفة إضافية عليك.">
+    * Diese Website enthält Affiliate-Links. Wenn du über unsere Links einkaufst, erhalten wir eine kleine Provision – für dich entstehen dabei keine Mehrkosten.
+  </p>
+</footer>
+
+<script>
+  var currentLang = 'de';
+
+  function setLang(lang, btn) {
+    currentLang = lang;
+    var html = document.documentElement;
+    var body = document.body;
+
+    html.lang = lang;
+    html.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    lang === 'ar' ? body.classList.add('ar') : body.classList.remove('ar');
+
+    document.querySelectorAll('[data-' + lang + ']').forEach(function(el) {
+      var val = el.getAttribute('data-' + lang);
+      if (el.tagName === 'INPUT') {
+        el.placeholder = val;
+      } else if (el.tagName === 'H1' || el.tagName === 'H2') {
+        el.innerHTML = val;
+      } else {
+        el.textContent = val;
+      }
+    });
+
+    document.getElementById('nl-input').placeholder = lang === 'ar' ? 'بريدك@الإلكتروني.de' : 'deine@email.de';
+
+    document.querySelectorAll('.lang-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+  }
+
+  function handleNL() {
+    alert(currentLang === 'ar' ? 'شكراً! تم تسجيلك 🎉' : 'Danke! Du bist dabei 🎉');
+  }
+</script>
+
+</body>
+</html>
