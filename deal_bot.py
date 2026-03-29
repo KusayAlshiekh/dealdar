@@ -235,20 +235,22 @@ def erstelle_deal_karten(deals):
         bild_html = build_image_html(deal)
 
         html_output += f"""
-    <div class="deal-card">
-      {badge_html}
-      {bild_html}
-      <div class="deal-body">
-        <div class="deal-store">{deal["store"]}</div>
-        <div class="deal-title">{deal["titel"]}</div>
-        <div class="deal-prices">
-          <span class="deal-price-new">{deal["preis_neu"]}</span>
-          {preis_alt_html}
-          {rabatt_html}
+    <a href="{deal["link"]}" target="_blank" rel="noopener nofollow" class="deal-card-link">
+      <div class="deal-card">
+        {badge_html}
+        {bild_html}
+        <div class="deal-body">
+          <div class="deal-store">{deal["store"]}</div>
+          <div class="deal-title">{deal["titel"]}</div>
+          <div class="deal-prices">
+            <span class="deal-price-new">{deal["preis_neu"]}</span>
+            {preis_alt_html}
+            {rabatt_html}
+          </div>
+          <div class="deal-cta">Zum Deal →</div>
         </div>
-        <a href="{deal["link"]}" target="_blank" rel="noopener nofollow" class="deal-cta">Zum Deal →</a>
       </div>
-    </div>"""
+    </a>"""
 
     return html_output
 
