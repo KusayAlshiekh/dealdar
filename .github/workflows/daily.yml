@@ -1,5 +1,6 @@
 name: 🌙 DealDar Bot – Täglich
-
+permissions:
+  contents: write
 on:
   schedule:
     # Läuft täglich um 8:00 Uhr morgens (Berlin Zeit)
