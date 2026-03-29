@@ -9,27 +9,11 @@ from datetime import datetime, timezone, timedelta
 from email.utils import parsedate_to_datetime
 
 HTML_FILE = "index.html"
+RSS_URL = "https://www.mydealz.de/rss/hot"
+
 MAX_DEALS = 6
 MIN_TEMP = 100
 MAX_AGE_DAYS = 3
-
-RSS_QUELLEN = [
-    "https://www.mydealz.de/rss/hottest",
-    "https://www.mydealz.de/rss/hot",
-]
-
-STORE_KEYWORDS = {
-    "amazon": "Amazon",
-    "mediamarkt": "MediaMarkt",
-    "saturn": "Saturn",
-    "ebay": "eBay",
-    "otto": "OTTO",
-    "lidl": "Lidl",
-    "aldi": "Aldi",
-    "notebooksbilliger": "NBB",
-    "galaxus": "Galaxus",
-    "cyberport": "Cyberport",
-}
 
 BLOCKED_WORDS = [
     "abo",
@@ -42,50 +26,36 @@ BLOCKED_WORDS = [
     "newsletter",
     "kostenlos testen",
     "gratis testen",
+    "personalisiert",
+    "gutscheinübersicht",
+    "app only",
+    "nur in der app",
+    "app-exklusiv",
 ]
 
-FALLBACK_IMAGES = {
-    "technik": "💻",
-    "laptop": "💻",
-    "computer": "💻",
-    "pc": "💻",
-    "handy": "📱",
-    "smartphone": "📱",
+FALLBACK_EMOJIS = {
     "iphone": "📱",
+    "smartphone": "📱",
     "samsung": "📱",
+    "apple": "🍎",
     "kopfhörer": "🎧",
-    "audio": "🎧",
     "headphones": "🎧",
+    "echo": "🔊",
+    "fire tv": "📺",
+    "kindle": "📚",
+    "monitor": "🖥️",
+    "laptop": "💻",
     "gaming": "🎮",
     "playstation": "🎮",
     "xbox": "🎮",
-    "nintendo": "🎮",
     "tv": "📺",
-    "fernseher": "📺",
-    "küche": "🍳",
-    "haushalt": "🏠",
-    "staubsauger": "🤖",
-    "sport": "💪",
-    "fitness": "💪",
-    "mode": "👗",
-    "kleidung": "👗",
-    "schuhe": "👟",
-    "reisen": "✈️",
-    "hotel": "✈️",
-    "flug": "✈️",
-    "buch": "📚",
-    "bücher": "📚",
     "uhr": "⌚",
     "watch": "⌚",
-    "kamera": "📷",
-    "auto": "🚗",
-    "lebensmittel": "🛒",
-    "essen": "🍔",
+    "staubsauger": "🧹",
+    "kaffee": "☕",
+    "küche": "🍳",
+    "haushalt": "🏠",
 }
-
-# ------------------------------------------------------------
-# Hilfsfunktionen
-# ------------------------------------------------------------
 
 def clean_text(text: str) -> str:
     text = html.unescape(text or "")
@@ -94,17 +64,9 @@ def clean_text(text: str) -> str:
 
 def parse_temp(title: str) -> int:
     match = re.search(r"(\d+)\s*°", title)
-    if match:
-        return int(match.group(1))
-    return 0
+    return int(match.group(1)) if match else 0
 
 def parse_prices(title: str):
-    """
-    Nimmt Euro-Werte aus dem Titel.
-    Heuristik:
-    - letzter €-Wert = aktueller Preis
-    - vorletzter €-Wert = alter Preis (optional)
-    """
     matches = re.findall(r"(\d+(?:[.,]\d+)?)\s*€", title)
     if not matches:
         return "?", ""
@@ -115,9 +77,7 @@ def parse_prices(title: str):
 
 def parse_discount(title: str) -> str:
     match = re.search(r"(\d{1,2})\s*%", title)
-    if match:
-        return match.group(1)
-    return ""
+    return match.group(1) if match else ""
 
 def extract_image(description: str) -> str:
     if not description:
@@ -139,16 +99,9 @@ def extract_image(description: str) -> str:
 
     return ""
 
-def get_store(title: str, link: str) -> str:
-    text = f"{title} {link}".lower()
-    for keyword, store in STORE_KEYWORDS.items():
-        if keyword in text:
-            return store
-    return "Online"
-
 def get_fallback_emoji(title: str) -> str:
     title_lower = title.lower()
-    for keyword, emoji in FALLBACK_IMAGES.items():
+    for keyword, emoji in FALLBACK_EMOJIS.items():
         if keyword in title_lower:
             return emoji
     return "🏷️"
@@ -168,6 +121,10 @@ def is_recent(pub_date_str: str) -> bool:
     except Exception:
         return False
 
+def is_amazon_deal(title: str, link: str, description: str) -> bool:
+    combined = f"{title} {link} {description}".lower()
+    return "amazon" in combined
+
 def is_good_deal(title: str, temp: int, current_price: str) -> bool:
     title_lower = title.lower()
 
@@ -182,90 +139,83 @@ def is_good_deal(title: str, temp: int, current_price: str) -> bool:
 
     return True
 
-# ------------------------------------------------------------
-# Feed laden
-# ------------------------------------------------------------
-
 def fetch_deals():
-    all_deals = []
+    deals = []
 
-    for url in RSS_QUELLEN:
-        print(f"Lade Feed: {url}")
+    try:
+        print(f"Lade Feed: {RSS_URL}")
 
-        try:
-            req = urllib.request.Request(
-                url,
-                headers={"User-Agent": "DealDarBot/5.0"}
-            )
+        req = urllib.request.Request(
+            RSS_URL,
+            headers={"User-Agent": "DealDarBot/6.0"}
+        )
 
-            with urllib.request.urlopen(req, timeout=15) as response:
-                data = response.read().decode("utf-8", errors="ignore")
+        with urllib.request.urlopen(req, timeout=15) as response:
+            data = response.read().decode("utf-8", errors="ignore")
 
-            root = ET.fromstring(data)
-            channel = root.find("channel")
-            if channel is None:
-                print("Kein channel gefunden.")
+        root = ET.fromstring(data)
+        channel = root.find("channel")
+        if channel is None:
+            print("Kein channel gefunden.")
+            return []
+
+        items = channel.findall("item")
+        print(f"Items gefunden: {len(items)}")
+
+        for item in items[:60]:
+            title = clean_text(item.findtext("title", ""))
+            link = clean_text(item.findtext("link", ""))
+            description = item.findtext("description", "") or ""
+            pub_date = clean_text(item.findtext("pubDate", ""))
+
+            if not title or not link:
                 continue
 
-            items = channel.findall("item")
-            print(f"Items gefunden: {len(items)}")
+            if not is_recent(pub_date):
+                continue
 
-            for item in items[:40]:
-                title = clean_text(item.findtext("title", ""))
-                link = clean_text(item.findtext("link", ""))
-                description = item.findtext("description", "") or ""
-                pub_date = clean_text(item.findtext("pubDate", ""))
+            if not is_amazon_deal(title, link, description):
+                continue
 
-                if not title or not link:
-                    continue
+            temp = parse_temp(title)
+            current_price, old_price = parse_prices(title)
+            discount = parse_discount(title)
 
-                if not is_recent(pub_date):
-                    continue
+            if not is_good_deal(title, temp, current_price):
+                continue
 
-                temp = parse_temp(title)
-                current_price, old_price = parse_prices(title)
-                discount = parse_discount(title)
+            deal = {
+                "title": title,
+                "link": link,
+                "image": extract_image(description),
+                "store": "Amazon",
+                "temp": temp,
+                "current_price": current_price,
+                "old_price": old_price,
+                "discount": discount,
+                "emoji": get_fallback_emoji(title),
+                "pub_date": pub_date,
+            }
 
-                if not is_good_deal(title, temp, current_price):
-                    continue
+            deals.append(deal)
 
-                deal = {
-                    "title": title,
-                    "link": link,
-                    "image": extract_image(description),
-                    "store": get_store(title, link),
-                    "temp": temp,
-                    "current_price": current_price,
-                    "old_price": old_price,
-                    "discount": discount,
-                    "emoji": get_fallback_emoji(title),
-                    "pub_date": pub_date,
-                }
+    except Exception as e:
+        print(f"Fehler beim Feed: {e}")
+        return []
 
-                all_deals.append(deal)
-
-        except Exception as e:
-            print(f"Fehler bei Feed {url}: {e}")
-
-    # Duplikate entfernen
     unique = []
     seen = set()
 
-    for deal in all_deals:
+    for deal in deals:
         key = deal["title"].lower()
         if key not in seen:
             seen.add(key)
             unique.append(deal)
 
-    # Nach Temperatur sortieren
     unique.sort(key=lambda d: d["temp"], reverse=True)
 
-    print(f"Verwertbare Deals: {len(unique)}")
+    print(f"Verwertbare Amazon-Deals: {len(unique)}")
     return unique[:MAX_DEALS]
-
-# ------------------------------------------------------------
-# HTML bauen
-# ------------------------------------------------------------
 
 def build_image_html(deal: dict) -> str:
     if deal["image"]:
@@ -274,20 +224,13 @@ def build_image_html(deal: dict) -> str:
             f'<img src="{deal["image"]}" alt="{html.escape(deal["title"])}" loading="lazy" referrerpolicy="no-referrer">'
             f'</div>'
         )
-
     return f'<div class="deal-img deal-img-fallback">{deal["emoji"]}</div>'
 
 def build_card(deal: dict) -> str:
     badge_html = f'<div class="badge-hot">🔥 {deal["temp"]}°</div>'
 
-    old_price_html = ""
-    if deal["old_price"]:
-        old_price_html = f'<span class="deal-price-old">{deal["old_price"]}</span>'
-
-    discount_html = ""
-    if deal["discount"]:
-        discount_html = f'<span class="deal-discount">-{deal["discount"]}%</span>'
-
+    old_price_html = f'<span class="deal-price-old">{deal["old_price"]}</span>' if deal["old_price"] else ""
+    discount_html = f'<span class="deal-discount">-{deal["discount"]}%</span>' if deal["discount"] else ""
     image_html = build_image_html(deal)
 
     return f"""
@@ -308,10 +251,6 @@ def build_card(deal: dict) -> str:
   </div>
 </a>
 """
-
-# ------------------------------------------------------------
-# HTML aktualisieren
-# ------------------------------------------------------------
 
 def update_html(deals):
     if not os.path.exists(HTML_FILE):
@@ -341,16 +280,12 @@ def update_html(deals):
 
     print("Website aktualisiert.")
 
-# ------------------------------------------------------------
-# Main
-# ------------------------------------------------------------
-
 def main():
-    print("DealDar Bot V5 startet...")
+    print("DealDar Bot V6 startet...")
     deals = fetch_deals()
 
     if not deals:
-        print("Keine passenden frischen Deals gefunden.")
+        print("Keine passenden Amazon-Deals gefunden.")
         return
 
     update_html(deals)
